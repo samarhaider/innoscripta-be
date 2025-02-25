@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Factories\NewsServiceFactory;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
+use App\Http\Requests\NewsListRequest;
 use App\Repositories\NewsRepository;
 
 
@@ -17,13 +17,9 @@ class NewsController extends Controller
         $this->newsRepository = new NewsRepository();
     }
 
-    public function index(Request $request): JsonResponse
+    public function index(NewsListRequest $request): JsonResponse
     {
-        $provider = $request->query('provider', config('services.news.default_provider')); // Get provider from query or config
-        $category = $request->query('category', config('services.news.default_category'));
-        $pageSize = $request->query('size', 10);
-        $news = $this->newsRepository->getNews($provider, $category, $pageSize);
-
+        $news = $this->newsRepository->getNewsPaginate($request);
         return response()->json($news);
     }
 
