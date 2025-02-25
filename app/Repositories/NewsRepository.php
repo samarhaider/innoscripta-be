@@ -4,6 +4,8 @@ namespace App\Repositories;
 
 use App\Models\NewsArticle;
 use Illuminate\Support\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
+use App\Http\Requests\NewsListRequest;
 
 class NewsRepository
 {
@@ -15,6 +17,16 @@ class NewsRepository
             orderBy('published_at', 'desc')
             ->limit($limit)
             ->get();
+    }
+
+    public function getNewsPaginate(NewsListRequest $request): LengthAwarePaginator
+    {
+        return NewsArticle::query()
+            ->Search($request->get('search', null))
+            ->Provider($request->get('provider', null))
+            // ->Category($request->get('category', null))
+            ->PublishedAt($request->get('date_start', null), $request->get('date_end', null))
+            ->paginate();
     }
 
     public function storeNews(string $provider, array $articles): void
